@@ -30,7 +30,7 @@ Sistema de overlay modular e extensível para desktop com suporte a Windows (Em 
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/easy-overlay.git
+git clone https://github.com/SterTheStar/easyoverlay.git
 cd easy-overlay
 
 # Execute o script de setup
