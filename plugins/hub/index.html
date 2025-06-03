@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Game Hub</title>
+    <style>
+        :root {
+            --primary-color: #7289da;
+            --secondary-color: #2c2f33;
+            --background-color: rgba(32, 34, 37, 0.95);
+            --text-color: #ffffff;
+            --card-background: rgba(47, 49, 54, 0.95);
+            --success-color: #43b581;
+            --warning-color: #faa61a;
+            --danger-color: #f04747;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: rgba(32, 34, 37, 0.95);
+            color: var(--text-color);
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: auto 300px;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+        }
+
+        .profile-section {
+            grid-column: span 6;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: var(--card-background);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .trophy-icon {
+            background: var(--primary-color);
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat-divider {
+            height: 40px;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .achievements-grid {
+            grid-column: span 6;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        .achievement-card {
+            background: var(--card-background);
+            border-radius: 10px;
+            padding: 15px;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar {
+            background: var(--card-background);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .friends-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .online-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .friends-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .friend {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+
+        .friend:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+
+        .status-online { background: var(--success-color); }
+        .status-away { background: var(--warning-color); }
+        .status-offline { background: var(--danger-color); }
+
+        .friend-info {
+            flex-grow: 1;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .friend-game {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="profile-section">
+                <div class="trophy-icon">🏆</div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <div class="stat-value">23/45</div>
+                        <div class="stat-label">Conquistas</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <div class="stat-value">11 horas</div>
+                        <div class="stat-label">Tempo Total</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat">
+                        <div class="stat-value">47 horas</div>
+                        <div class="stat-label">Tempo Total</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Primeira Vitória</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Mestre do Combate</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Colecionador</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Estrategista</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Lendário</div>
+                </div>
+                <div class="achievement-card">
+                    <div class="achievement-icon"></div>
+                    <div class="achievement-name">Explorador</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="friends-header">
+                <h2>Amigos</h2>
+                <span class="online-count">26 Online</span>
+            </div>
+            <div class="friends-list">
+                <div class="friend">
+                    <div style="position: relative;">
+                        <div class="friend-avatar"></div>
+                        <div class="status-indicator status-online"></div>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">João</div>
+                        <div class="friend-game">Counter-Strike 2</div>
+                    </div>
+                </div>
+                <div class="friend">
+                    <div style="position: relative;">
+                        <div class="friend-avatar"></div>
+                        <div class="status-indicator status-away"></div>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">Maria</div>
+                        <div class="friend-game">Valorant</div>
+                    </div>
+                </div>
+                <div class="friend">
+                    <div style="position: relative;">
+                        <div class="friend-avatar"></div>
+                        <div class="status-indicator status-offline"></div>
+                    </div>
+                    <div class="friend-info">
+                        <div class="friend-name">Pedro</div>
+                        <div class="friend-game">Visto por último: 2h atrás</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('hub-data', (event, data) => {
+            updateUI(data);
+        });
+
+        ipcRenderer.on('hub-update', (event, data) => {
+            updateUI(data);
+        });
+
+        function updateUI(data) {
+            // Atualizar estatísticas do perfil
+            const statsContainer = document.querySelector('.profile-stats');
+            if (data.stats) {
+                // Atualizar valores das estatísticas
+            }
+
+            // Atualizar conquistas
+            const achievementsGrid = document.querySelector('.achievements-grid');
+            if (data.achievements) {
+                // Atualizar conquistas
+            }
+
+            // Atualizar lista de amigos
+            const friendsList = document.querySelector('.friends-list');
+            if (data.friends) {
+                const onlineCount = data.friends.filter(f => f.status === 'online').length;
+                document.querySelector('.online-count').textContent = `${onlineCount} Online`;
+                
+                friendsList.innerHTML = data.friends.map(friend => `
+                    <div class="friend">
+                        <div style="position: relative;">
+                            <div class="friend-avatar"></div>
+                            <div class="status-indicator status-${friend.status}"></div>
+                        </div>
+                        <div class="friend-info">
+                            <div class="friend-name">${friend.name}</div>
+                            ${friend.game ? 
+                                `<div class="friend-game">${friend.game}</div>` :
+                                `<div class="friend-game">Visto por último: ${friend.lastSeen}</div>`
+                            }
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+    </script>
+</body>
+</html> 

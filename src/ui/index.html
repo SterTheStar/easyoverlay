@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EasyOverlay - Painel de Controle</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .overlay-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .overlay-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background: #2980b9;
+        }
+
+        .plugin-section {
+            margin-top: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 300px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .plugin-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .plugin-option:hover {
+            background-color: #f5f5f5;
+        }
+
+        .plugin-option.selected {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .plugin-option input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .button.primary {
+            background: #2196f3;
+        }
+
+        .button.primary:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EasyOverlay</h1>
+            <p>Sistema de overlay modular e extensível</p>
+        </div>
+
+        <div class="overlay-list">
+            <h2>Overlays Ativos</h2>
+            <div id="overlayList"></div>
+            <button class="button" onclick="createNewOverlay()">Novo Overlay</button>
+        </div>
+
+        <div class="plugin-section">
+            <h2>Plugins</h2>
+            <div id="pluginList"></div>
+            <button class="button" onclick="loadPlugin()">Carregar Plugin</button>
+        </div>
+
+        <div class="window-list" style="margin-top: 20px; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2>Janelas Ativas</h2>
+            <button class="button" onclick="listWindows()">Listar Janelas</button>
+            <div id="windowList"></div>
+        </div>
+    </div>
+
+    <!-- Modal de seleção de plugin -->
+    <div id="pluginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Selecione um Plugin</h3>
+                <button class="close-button" onclick="closePluginModal()">&times;</button>
+            </div>
+            <div class="plugin-options">
+                <div class="plugin-option" onclick="selectPlugin('fps-counter')">
+                    <input type="radio" name="plugin" value="fps-counter" id="fps-counter">
+                    <label for="fps-counter">Contador de FPS</label>
+                </div>
+                <div class="plugin-option" onclick="selectPlugin('hub')">
+                    <input type="radio" name="plugin" value="hub" id="hub">
+                    <label for="hub">Hub de Jogo</label>
+                </div>
+                <div class="plugin-option" onclick="selectPlugin('game-stats')">
+                    <input type="radio" name="plugin" value="game-stats" id="game-stats">
+                    <label for="game-stats">Estatísticas do Jogo</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="button" onclick="closePluginModal()">Cancelar</button>
+                <button class="button primary" onclick="confirmPluginSelection()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8081');
+        const overlays = new Map();
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === 'overlayCreated') {
+                addOverlayToList(data.id);
+            }
+            if (data.type === 'windowsList') {
+                renderWindowList(data.windows);
+            }
+        };
+
+        function createNewOverlay() {
+            ws.send(JSON.stringify({
+                type: 'createOverlay',
+                options: {
+                    width: 300,
+                    height: 200,
+                    x: 100,
+                    y: 100
+                }
+            }));
+        }
+
+        function addOverlayToList(id) {
+            const overlayList = document.getElementById('overlayList');
+            const overlayItem = document.createElement('div');
+            overlayItem.className = 'overlay-item';
+            overlayItem.innerHTML = `
+                <span>Overlay ${id}</span>
+                <div>
+                    <button class="button" onclick="updateOverlay('${id}')">Atualizar</button>
+                    <button class="button" onclick="removeOverlay('${id}')">Remover</button>
+                </div>
+            `;
+            overlayList.appendChild(overlayItem);
+            overlays.set(id, overlayItem);
+        }
+
+        function updateOverlay(id) {
+            ws.send(JSON.stringify({
+                type: 'updateOverlay',
+                id: id,
+                options: {
+                    position: { x: 200, y: 200 },
+                    size: { width: 400, height: 300 },
+                    opacity: 0.8
+                }
+            }));
+        }
+
+        function removeOverlay(id) {
+            ws.send(JSON.stringify({
+                type: 'removeOverlay',
+                id: id
+            }));
+            const overlayItem = overlays.get(id);
+            if (overlayItem) {
+                overlayItem.remove();
+                overlays.delete(id);
+            }
+        }
+
+        function loadPlugin() {
+            // Implementação do carregamento de plugins
+            console.log('Carregando plugin...');
+        }
+
+        function listWindows() {
+            ws.send(JSON.stringify({ type: 'listWindows' }));
+        }
+
+        let selectedWindowId = null;
+        let selectedPlugin = null;
+
+        function showPluginModal(windowId) {
+            selectedWindowId = windowId;
+            document.getElementById('pluginModal').style.display = 'flex';
+        }
+
+        function closePluginModal() {
+            document.getElementById('pluginModal').style.display = 'none';
+            selectedWindowId = null;
+            selectedPlugin = null;
+        }
+
+        function selectPlugin(pluginId) {
+            selectedPlugin = pluginId;
+            // Atualizar UI para mostrar seleção
+            document.querySelectorAll('.plugin-option').forEach(option => {
+                option.classList.remove('selected');
+                if (option.querySelector('input').value === pluginId) {
+                    option.classList.add('selected');
+                }
+            });
+        }
+
+        function confirmPluginSelection() {
+            if (selectedWindowId && selectedPlugin) {
+                createOverlayForWindow(selectedWindowId, selectedPlugin);
+                closePluginModal();
+            }
+        }
+
+        function renderWindowList(windows) {
+            const windowList = document.getElementById('windowList');
+            windowList.innerHTML = '';
+            windows.forEach(win => {
+                const div = document.createElement('div');
+                div.className = 'overlay-item';
+                div.innerHTML = `
+                    <span>${win.title || '(sem título)'} <small style='color:#888'>[${win.id}]</small></span>
+                    <button class="button" onclick="showPluginModal('${win.id}')">Criar Overlay</button>
+                `;
+                windowList.appendChild(div);
+            });
+        }
+
+        function createOverlayForWindow(windowId, plugin) {
+            ws.send(JSON.stringify({
+                type: 'createOverlay',
+                options: {
+                    attachTo: windowId,
+                    width: 300,
+                    height: 200,
+                    x: 100,
+                    y: 100,
+                    plugin: plugin
+                }
+            }));
+        }
+    </script>
+</body>
+</html> 

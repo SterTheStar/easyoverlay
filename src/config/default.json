@@ -1,0 +1,27 @@
+{
+    "overlay": {
+        "defaultWidth": 300,
+        "defaultHeight": 200,
+        "defaultOpacity": 0.8,
+        "clickThrough": false,
+        "alwaysOnTop": true
+    },
+    "server": {
+        "port": 8080,
+        "websocketPort": 8081
+    },
+    "plugins": {
+        "directory": "plugins",
+        "hotReload": true,
+        "autoLoad": true
+    },
+    "window": {
+        "attachOnCreate": false,
+        "followWindow": true,
+        "updateInterval": 100
+    },
+    "ui": {
+        "theme": "dark",
+        "language": "pt-BR"
+    }
+} 

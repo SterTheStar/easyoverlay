@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 10px;
+            background-color: transparent;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .stats-container {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            width: fit-content;
+        }
+
+        .stat-item {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            margin-right: 10px;
+            min-width: 50px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .fps { color: #00ff00; }
+        .ping { color: #00ffff; }
+        .cpu { color: #ff9900; }
+        .memory { color: #ff00ff; }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <div class="stat-item">
+            <span class="stat-label">FPS:</span>
+            <span class="stat-value fps" id="fps">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Ping:</span>
+            <span class="stat-value ping" id="ping">0 ms</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">CPU:</span>
+            <span class="stat-value cpu" id="cpu">0%</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">RAM:</span>
+            <span class="stat-value memory" id="memory">0%</span>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        ipcRenderer.on('update-stats', (event, stats) => {
+            document.getElementById('fps').textContent = stats.fps;
+            document.getElementById('ping').textContent = stats.ping + ' ms';
+            document.getElementById('cpu').textContent = stats.cpu + '%';
+            document.getElementById('memory').textContent = stats.memory + '%';
+        });
+    </script>
+</body>
+</html> 
