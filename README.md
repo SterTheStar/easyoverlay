@@ -46,14 +46,10 @@ npm run dev
 ## Plugins Disponíveis (Simulados)
 
 ### 1. Contador de FPS (fps-counter)
-- Mostra FPS em simulado
-- Interface minimalista e transparente
-- Ideal para jogos e aplicações gráficas
+- Mostra FPS simulado
 
 ### 2. Hub de Jogo (hub)
 - Interface central para informações do jogo
-- Customizável e extensível
-- Suporte para múltiplos jogos
 
 ### 3. Estatísticas do Jogo (game-stats)
 - Monitoramento simulado:
@@ -61,8 +57,6 @@ npm run dev
   - Ping
   - Uso de CPU
   - Uso de Memória RAM
-- Interface moderna com código de cores
-- Atualização automática a cada segundo
 
 ## Estrutura do Projeto
 
@@ -104,7 +98,6 @@ O arquivo `src/config/default.json` permite configurar:
 - Portas do servidor
 - Configurações de plugins
 - Comportamento das janelas
-- Tema da interface
 
 ## Desenvolvimento de Plugins
 
